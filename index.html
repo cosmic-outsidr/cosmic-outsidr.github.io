@@ -19,24 +19,22 @@
       --glow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
     }
     html,body{height:100%;margin:0}
+
     body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
-      display:grid; place-items:center; color:var(--text);
-      background: radial-gradient(1200px 800px at 70% 20%, var(--bg2), var(--bg)) fixed no-repeat;
-      overflow:hidden;
-    }
-    .stars{position:fixed;inset:0;pointer-events:none;background:
-      radial-gradient(2px 2px at 20% 30%, var(--star), transparent 60%),
-      radial-gradient(2px 2px at 70% 50%, var(--star), transparent 60%),
-      radial-gradient(2px 2px at 40% 80%, var(--star), transparent 60%),
-      radial-gradient(1px 1px at 55% 15%, var(--star), transparent 60%),
-      radial-gradient(1px 1px at 85% 70%, var(--star), transparent 60%);
-      filter: drop-shadow(0 0 6px rgba(255,229,138,.4));
-    }
-    .ring{position:fixed; right:6vw; top:8vh; width:min(22vmin,160px); aspect-ratio:1/1; border-radius:50%;
-      box-shadow: 0 0 0 8px rgba(255,255,255,.05) inset;
-      background: conic-gradient(from 120deg, #ffd474, #ff8a7a, #7de1ff, #ffd474);
-      opacity:.75; filter: blur(.2px);
+  /* your existing fonts/layout can stay */
+  min-height:100dvh;
+  margin:0;
+  color:#f7f7f7;
+
+  /* background image + gradient for legibility */
+  background:
+    linear-gradient( to bottom, rgba(0,0,0,.35), rgba(0,0,0,.55) ),
+    url("./images/bg.webp");
+  background-size: cover;        /* fill the screen */
+  background-position: center;   /* keep subject centered */
+  background-repeat: no-repeat;
+  background-attachment: fixed;  /* nice parallax on desktop */
+      
     }
     main.card{
       text-align:center; padding:28px 24px; max-width:720px; line-height:1.2;
