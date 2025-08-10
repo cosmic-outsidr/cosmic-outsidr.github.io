@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trailstronauts • Messages</title>
+  <meta name="description" content="A single, rotating message of encouragement for wanderers and wonderers." />
+  <meta property="og:title" content="Trailstronauts • Messages" />
+  <meta property="og:description" content="A single, rotating message of encouragement for wanderers and wonderers." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://og-playground.vercel.sh/api/card?title=Trailstronauts&subtitle=Everyone%20belongs%20among%20the%20stars" />
+  <style>
+    :root {
+      --bg:#0e1530;
+      --bg2:#1c2a63;
+      --star:#ffe58a;
+      --text:#f7f7f7;
+      --accent:#7de1ff;
+      --glow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    html,body{height:100%;margin:0}
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      display:grid; place-items:center; color:var(--text);
+      background: radial-gradient(1200px 800px at 70% 20%, var(--bg2), var(--bg)) fixed no-repeat;
+      overflow:hidden;
+    }
+    .stars{position:fixed;inset:0;pointer-events:none;background:
+      radial-gradient(2px 2px at 20% 30%, var(--star), transparent 60%),
+      radial-gradient(2px 2px at 70% 50%, var(--star), transparent 60%),
+      radial-gradient(2px 2px at 40% 80%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 55% 15%, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 85% 70%, var(--star), transparent 60%);
+      filter: drop-shadow(0 0 6px rgba(255,229,138,.4));
+    }
+    .ring{position:fixed; right:6vw; top:8vh; width:min(22vmin,160px); aspect-ratio:1/1; border-radius:50%;
+      box-shadow: 0 0 0 8px rgba(255,255,255,.05) inset;
+      background: conic-gradient(from 120deg, #ffd474, #ff8a7a, #7de1ff, #ffd474);
+      opacity:.75; filter: blur(.2px);
+    }
+    main.card{
+      text-align:center; padding:28px 24px; max-width:720px; line-height:1.2;
+      border:1px solid #2b366a; border-radius:20px; backdrop-filter: blur(4px);
+      background: rgba(255,255,255,.04);
+      box-shadow: var(--glow);
+      margin: 0 16px;
+    }
+    h1{font-size: clamp(28px, 6vw, 54px); margin:0 0 12px}
+    p{opacity:.9; margin:.25rem 0 0; font-size: clamp(14px, 2.5vw, 16px)}
+    .sub{opacity:.7; margin-top:.5rem}
+    footer{position:fixed; inset:auto 0 14px; text-align:center; font-size:12px; opacity:.7}
+    .controls{position:fixed; top:12px; right:12px; display:flex; gap:8px; align-items:center; font-size:12px; opacity:.75}
+    .btn{
+      border:1px solid #2b366a; border-radius:999px; padding:6px 10px; background: rgba(255,255,255,.06); color:var(--text);
+      cursor:pointer; box-shadow: var(--glow);
+    }
+    .btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="ring" aria-hidden="true"></div>
+
+  <div class="controls" aria-label="controls">
+    <button class="btn" id="shuffle" title="Show another message">New message</button>
+  </div>
+
+  <main class="card" role="main" aria-live="polite">
+    <h1 id="msg">Loading…</h1>
+    <p class="sub">Thanks for scanning — have a beautiful Burn. ✶</p>
+  </main>
+
+  <footer>Trailstronauts • Tomorrow Today • <span id="modeLabel"></span></footer>
+
+  <script>
+    // ---- Configuration ----
+    const CONFIG = {
+      mode: "daily", // "daily" or "random"
+      // Add or edit your messages here.
+      messages: [
+        "You belong outside — and out there.",
+        "Find your people. Or be your people.",
+        "Take up space. Share the trail.",
+        "You are the wonder you’re chasing.",
+        "Dusty, loved, and perfectly enough.",
+        "Joy is a direction, not a place.",
+        "Breathe. Look up. Keep wandering.",
+        "Everyone belongs among the stars.",
+        "Your voice, your pace, your path."
+      ]
+    };
+
+    const el = {
+      msg: document.getElementById("msg"),
+      shuffle: document.getElementById("shuffle"),
+      modeLabel: document.getElementById("modeLabel")
+    };
+
+    function pickIndexDaily(list){
+      const d = new Date();
+      const seed = d.getUTCFullYear()*372 + (d.getUTCMonth()+1)*31 + d.getUTCDate();
+      return seed % list.length;
+    }
+    function pickIndexRandom(list){
+      return Math.floor(Math.random() * list.length);
+    }
+
+    function renderMessage(idx){
+      el.msg.textContent = CONFIG.messages[idx];
+    }
+
+    function init(){
+      const daily = CONFIG.mode === "daily";
+      let idx = daily ? pickIndexDaily(CONFIG.messages) : pickIndexRandom(CONFIG.messages);
+      renderMessage(idx);
+      el.modeLabel.textContent = daily ? "Daily message" : "Random message";
+      el.shuffle.addEventListener("click", () => {
+        idx = pickIndexRandom(CONFIG.messages);
+        renderMessage(idx);
+      });
+    }
+    init();
+  </script>
+</body>
+</html>
