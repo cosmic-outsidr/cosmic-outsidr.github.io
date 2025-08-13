@@ -3,78 +3,127 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trailstronauts • Messages</title>
-  <meta name="description" content="A single, rotating message of encouragement for wanderers and wonderers." />
-  <meta property="og:title" content="Trailstronauts • Messages" />
-  <meta property="og:description" content="A single, rotating message of encouragement for wanderers and wonderers." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://og-playground.vercel.sh/api/card?title=Trailstronauts&subtitle=Everyone%20belongs%20among%20the%20stars" />
+  <title>Cosmic Outsidr • Messages</title>
+  <meta name="description" content="A single, rotating or daily message of encouragement for wanderers and wonderers." />
+  <meta name="theme-color" content="#0e1530" />
+  <!-- Google font for a cosmic vibe -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
-    :root {
+    :root{
       --bg:#0e1530;
-      --bg2:#1c2a63;
-      --star:#ffe58a;
       --text:#f7f7f7;
+      --panel:rgba(0,0,0,.35);
+      --panelBorder:rgba(255,255,255,.08);
       --accent:#7de1ff;
-      --glow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+      --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+      --glow: 0 0 22px rgba(125,225,255,.35);
     }
+    *{box-sizing:border-box}
     html,body{height:100%;margin:0}
-
     body{
-  /* your existing fonts/layout can stay */
-  min-height:100dvh;
-  margin:0;
-  color:#f7f7f7;
-
-  /* background image + gradient for legibility */
-  background:
-    linear-gradient( to bottom, rgba(0,0,0,.35), rgba(0,0,0,.55) ),
-    url("./images/bg.webp");
-  background-size: cover;        /* fill the screen */
-  background-position: center;   /* keep subject centered */
-  background-repeat: no-repeat;
-  background-attachment: fixed;  /* nice parallax on desktop */
-      
+      font-family:"Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans";
+      color:var(--text);
+      display:grid; place-items:center;
+      background: var(--bg);
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
+
+    /* Background image layer */
+    .bg{
+      position:fixed; inset:0; z-index:-2;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.68)),
+        url("./images/yellowflowerfield.webp") center/cover no-repeat;
+    }
+    /* If your file isn't .webp, JS below will swap to .jpg/.jpeg/.png automatically */
+
+    /* Star sprinkles (subtle) */
+    .stars{
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background:
+        radial-gradient(2px 2px at 20% 30%, #ffe58a, transparent 55%),
+        radial-gradient(2px 2px at 70% 50%, #ffe58a, transparent 55%),
+        radial-gradient(2px 2px at 40% 80%, #ffe58a, transparent 55%),
+        radial-gradient(1px 1px at 55% 15%, #ffe58a, transparent 55%),
+        radial-gradient(1px 1px at 85% 70%, #ffe58a, transparent 55%);
+      filter: drop-shadow(0 0 6px rgba(255,229,138,.4));
+    }
+
     main.card{
-      text-align:center; padding:28px 24px; max-width:720px; line-height:1.2;
-      border:1px solid #2b366a; border-radius:20px; backdrop-filter: blur(4px);
-      background: rgba(255,255,255,.04);
-      box-shadow: var(--glow);
+      text-align:center;
+      padding:28px 22px; width:min(92vw, 780px);
+      background:var(--panel);
+      border:1px solid var(--panelBorder);
+      border-radius:20px;
+      backdrop-filter: blur(4px);
+      box-shadow: var(--shadow);
       margin: 0 16px;
     }
-    h1{font-size: clamp(28px, 6vw, 54px); margin:0 0 12px}
-    p{opacity:.9; margin:.25rem 0 0; font-size: clamp(14px, 2.5vw, 16px)}
-    .sub{opacity:.7; margin-top:.5rem}
-    footer{position:fixed; inset:auto 0 14px; text-align:center; font-size:12px; opacity:.7}
-    .controls{position:fixed; top:12px; right:12px; display:flex; gap:8px; align-items:center; font-size:12px; opacity:.75}
+    h1{
+      margin:0 0 12px;
+      font-size:clamp(26px, 7vw, 54px);
+      line-height:1.1;
+      text-shadow: var(--glow);
+      transition: opacity .35s ease;
+      opacity:1;
+    }
+    .fading{ opacity:0; } /* used for fade animation */
+
+    p.sub{margin:.35rem 0 0; font-size:clamp(14px, 3.5vw, 18px); opacity:.9}
+
+    footer{
+      position:fixed; inset:auto 0 10px;
+      text-align:center; font-size:12px; opacity:.78; padding:0 10px;
+    }
+
+    /* Controls (mobile-first sizing) */
+    .controls{
+      position:fixed; top:12px; right:12px; left:12px;
+      display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;
+      font-size:12px; opacity:.95
+    }
     .btn{
-      border:1px solid #2b366a; border-radius:999px; padding:6px 10px; background: rgba(255,255,255,.06); color:var(--text);
-      cursor:pointer; box-shadow: var(--glow);
+      border:1px solid var(--panelBorder); border-radius:999px;
+      padding:8px 12px; background:rgba(0,0,0,.30); color:var(--text);
+      cursor:pointer; backdrop-filter: blur(2px); box-shadow: var(--shadow);
+      display:inline-flex; align-items:center; gap:8px;
     }
     .btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+    .btn[disabled]{opacity:.6; cursor:not-allowed}
+
+    /* Mobile tweaks */
+    @media (max-width:480px){
+      .btn{ padding:7px 10px }
+      main.card{ padding:22px 18px }
+    }
   </style>
 </head>
 <body>
+  <div class="bg" aria-hidden="true"></div>
   <div class="stars" aria-hidden="true"></div>
-  <div class="ring" aria-hidden="true"></div>
 
-  <div class="controls" aria-label="controls">
-    <button class="btn" id="shuffle" title="Show another message">New message</button>
+  <div class="controls" role="toolbar" aria-label="page controls">
+    <button id="copyBtn" class="btn" title="Copy message">📋 Copy</button>
+    <button id="shareBtn" class="btn" title="Share message">📤 Share</button>
+    <button id="newMsg" class="btn" title="Show another message">🔀 New</button>
+    <button id="toggleMode" class="btn" title="Toggle message mode">Mode: <span id="modeLabel">daily</span></button>
   </div>
 
   <main class="card" role="main" aria-live="polite">
     <h1 id="msg">Loading…</h1>
-    <p class="sub">Thanks for scanning — have a beautiful Burn. ✶</p>
+    <p class="sub">Thanks for scanning — have a beautiful day. ✶</p>
   </main>
 
-  <footer>Cosmic Collective • Tomorrow Today • <span id="modeLabel"></span></footer>
+  <footer>Cosmic Outsidr • Everyone belongs among the stars</footer>
 
   <script>
-    // ---- Configuration ----
+    /* -------- CONFIG -------- */
     const CONFIG = {
       mode: "daily", // "daily" or "random"
-      // Add or edit your messages here.
+      bgBase: "./images/yellowflowerfield", // filename without extension
+      bgTryExt: ["webp","jpg","jpeg","png"], // will try in this order
       messages: [
         "You belong outside — and out there.",
         "Find your people. Or be your people.",
@@ -88,10 +137,30 @@
       ]
     };
 
+    /* ---- Background loader: try different extensions automatically ---- */
+    (async function setBackground(){
+      const bgDiv = document.querySelector('.bg');
+      for (const ext of CONFIG.bgTryExt) {
+        const url = `${CONFIG.bgBase}.${ext}`;
+        try {
+          const ok = await fetch(url, {method:'HEAD'}).then(r=>r.ok).catch(()=>false);
+          if (ok) {
+            bgDiv.style.backgroundImage =
+              `linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.68)), url("${url}")`;
+            break;
+          }
+        } catch(e){}
+      }
+    })();
+
+    /* -------- Message engine -------- */
     const el = {
       msg: document.getElementById("msg"),
-      shuffle: document.getElementById("shuffle"),
-      modeLabel: document.getElementById("modeLabel")
+      newMsg: document.getElementById("newMsg"),
+      toggle: document.getElementById("toggleMode"),
+      modeLabel: document.getElementById("modeLabel"),
+      copy: document.getElementById("copyBtn"),
+      share: document.getElementById("shareBtn")
     };
 
     function pickIndexDaily(list){
@@ -103,21 +172,72 @@
       return Math.floor(Math.random() * list.length);
     }
 
-    function renderMessage(idx){
-      el.msg.textContent = CONFIG.messages[idx];
+    function fadeSetText(node, text){
+      node.classList.add('fading');
+      setTimeout(() => {
+        node.textContent = text;
+        node.classList.remove('fading');
+      }, 180); // duration should match CSS transition (~.35s total feels nice)
     }
 
-    function init(){
-      const daily = CONFIG.mode === "daily";
-      let idx = daily ? pickIndexDaily(CONFIG.messages) : pickIndexRandom(CONFIG.messages);
-      renderMessage(idx);
-      el.modeLabel.textContent = daily ? "Daily message" : "Random message";
-      el.shuffle.addEventListener("click", () => {
-        idx = pickIndexRandom(CONFIG.messages);
-        renderMessage(idx);
-      });
+    function render(mode){
+      const list = CONFIG.messages;
+      const idx = (mode === "daily") ? pickIndexDaily(list) : pickIndexRandom(list);
+      fadeSetText(el.msg, list[idx]);
+      el.modeLabel.textContent = mode;
     }
-    init();
+
+    // Init: allow ?mode=random in the URL for quick testing
+    const params = new URLSearchParams(location.search);
+    let currentMode = params.get("mode") === "random" ? "random" : CONFIG.mode;
+    render(currentMode);
+
+    // Shuffle button (in daily mode, it just re-renders same daily pick)
+    el.newMsg.addEventListener("click", () => render(currentMode));
+
+    // Toggle mode button
+    el.toggle.addEventListener("click", () => {
+      currentMode = (currentMode === "daily") ? "random" : "daily";
+      render(currentMode);
+    });
+
+    /* -------- Click-to-copy -------- */
+    el.copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(el.msg.textContent);
+        el.copy.textContent = "✅ Copied";
+        setTimeout(()=> el.copy.textContent = "📋 Copy", 1400);
+      } catch (e) {
+        el.copy.textContent = "❌ Copy failed";
+        setTimeout(()=> el.copy.textContent = "📋 Copy", 1400);
+      }
+    });
+
+    /* -------- Share (Web Share API + fallback) -------- */
+    el.share.addEventListener("click", async () => {
+      const text = el.msg.textContent + " — Cosmic Outsidr";
+      const url  = location.href;
+      if (navigator.share) {
+        try { await navigator.share({ text, url }); }
+        catch(e){} // user cancelled
+      } else {
+        try {
+          await navigator.clipboard.writeText(`${text}\n${url}`);
+          el.share.textContent = "✅ Link copied";
+          setTimeout(()=> el.share.textContent = "📤 Share", 1400);
+        } catch(e) {
+          alert("Link copied:\n" + url);
+        }
+      }
+    });
+
+    /* -------- Auto-refresh at midnight (UTC) -------- */
+    (function scheduleMidnightRefresh(){
+      const now = new Date();
+      const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1, 0,0,2)); // +2s buffer
+      const ms = next - now;
+      setTimeout(() => { render("daily"); scheduleMidnightRefresh(); }, ms);
+    })();
   </script>
 </body>
 </html>
