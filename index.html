@@ -118,126 +118,79 @@
 
   <footer>Cosmic Outsidr • Everyone belongs among the stars</footer>
 
-  <script>
-    /* -------- CONFIG -------- */
-    const CONFIG = {
-      mode: "daily", // "daily" or "random"
-      bgBase: "IMG_1173.jpeg", // filename without extension
-      bgTryExt: ["webp","jpg","jpeg","png"], // will try in this order
-      messages: [
-        "You belong outside — and out there.",
-        "Find your people. Or be your people.",
-        "Take up space. Share the trail.",
-        "You are the wonder you’re chasing.",
-        "Dusty, loved, and perfectly enough.",
-        "Joy is a direction, not a place.",
-        "Breathe. Look up. Keep wandering.",
-        "Everyone belongs among the stars.",
-        "Your voice, your pace, your path."
-      ]
-    };
+ <script>
+  // Fallback (used if JSON fetch fails)
+  const FALLBACK = {
+    mode: "daily",
+    messages: [
+      "You belong outside — and out there.",
+      "Find your people. Or be your people.",
+      "Take up space. Share the trail.",
+      "You are the wonder you’re chasing.",
+      "Dusty, loved, and perfectly enough.",
+      "Joy is a direction, not a place.",
+      "Breathe. Look up. Keep wandering.",
+      "Everyone belongs among the stars.",
+      "Your voice, your pace, your path."
+    ]
+  };
 
-    /* ---- Background loader: try different extensions automatically ---- */
-    (async function setBackground(){
-      const bgDiv = document.querySelector('.bg');
-      for (const ext of CONFIG.bgTryExt) {
-        const url = `${CONFIG.bgBase}.${ext}`;
-        try {
-          const ok = await fetch(url, {method:'HEAD'}).then(r=>r.ok).catch(()=>false);
-          if (ok) {
-            bgDiv.style.backgroundImage =
-              `linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.68)), url("${url}")`;
-            break;
-          }
-        } catch(e){}
-      }
-    })();
+  const el = {
+    msg: document.getElementById("msg"),
+    modeLabel: document.getElementById("modeLabel"),
+    newBtn: document.getElementById("newMsg"),
+    toggleBtn: document.getElementById("toggleMode"),
+  };
 
-    /* -------- Message engine -------- */
-    const el = {
-      msg: document.getElementById("msg"),
-      newMsg: document.getElementById("newMsg"),
-      toggle: document.getElementById("toggleMode"),
-      modeLabel: document.getElementById("modeLabel"),
-      copy: document.getElementById("copyBtn"),
-      share: document.getElementById("shareBtn")
-    };
+  const pickDaily = (list) => {
+    const d = new Date();
+    const seed = d.getUTCFullYear()*372 + (d.getUTCMonth()+1)*31 + d.getUTCDate();
+    return seed % list.length;
+  };
+  const pickRandom = (list) => Math.floor(Math.random() * list.length);
 
-    function pickIndexDaily(list){
-      const d = new Date();
-      const seed = d.getUTCFullYear()*372 + (d.getUTCMonth()+1)*31 + d.getUTCDate();
-      return seed % list.length;
+  const fadeSetText = (node, text) => {
+    node.classList.add('fading');
+    setTimeout(() => { node.textContent = text; node.classList.remove('fading'); }, 180);
+  };
+
+  let DATA = FALLBACK;
+  let mode = FALLBACK.mode;
+
+  async function loadMessages() {
+    try {
+      // prevent heavy caching while you iterate
+      const res = await fetch("./messages.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      DATA = await res.json();
+      mode = (DATA.mode === "random" ? "random" : "daily");
+    } catch (e) {
+      console.warn("Using fallback messages:", e);
     }
-    function pickIndexRandom(list){
-      return Math.floor(Math.random() * list.length);
-    }
+  }
 
-    function fadeSetText(node, text){
-      node.classList.add('fading');
-      setTimeout(() => {
-        node.textContent = text;
-        node.classList.remove('fading');
-      }, 180); // duration should match CSS transition (~.35s total feels nice)
-    }
+  function render() {
+    const list = DATA.messages || FALLBACK.messages;
+    const idx = (mode === "daily") ? pickDaily(list) : pickRandom(list);
+    fadeSetText(el.msg, list[idx]);
+    el.modeLabel.textContent = mode;
+  }
 
-    function render(mode){
-      const list = CONFIG.messages;
-      const idx = (mode === "daily") ? pickIndexDaily(list) : pickIndexRandom(list);
-      fadeSetText(el.msg, list[idx]);
-      el.modeLabel.textContent = mode;
-    }
-
-    // Init: allow ?mode=random in the URL for quick testing
+  (async function init() {
+    await loadMessages();
+    // allow ?mode=random override for quick testing
     const params = new URLSearchParams(location.search);
-    let currentMode = params.get("mode") === "random" ? "random" : CONFIG.mode;
-    render(currentMode);
+    if (params.get("mode")) mode = (params.get("mode")==="random") ? "random":"daily";
+    render();
 
-    // Shuffle button (in daily mode, it just re-renders same daily pick)
-    el.newMsg.addEventListener("click", () => render(currentMode));
+    el.newBtn?.addEventListener("click", render);
+    el.toggleBtn?.addEventListener("click", () => { mode = (mode==="daily")?"random":"daily"; render(); });
 
-    // Toggle mode button
-    el.toggle.addEventListener("click", () => {
-      currentMode = (currentMode === "daily") ? "random" : "daily";
-      render(currentMode);
-    });
-
-    /* -------- Click-to-copy -------- */
-    el.copy.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(el.msg.textContent);
-        el.copy.textContent = "✅ Copied";
-        setTimeout(()=> el.copy.textContent = "📋 Copy", 1400);
-      } catch (e) {
-        el.copy.textContent = "❌ Copy failed";
-        setTimeout(()=> el.copy.textContent = "📋 Copy", 1400);
-      }
-    });
-
-    /* -------- Share (Web Share API + fallback) -------- */
-    el.share.addEventListener("click", async () => {
-      const text = el.msg.textContent + " — Cosmic Outsidr";
-      const url  = location.href;
-      if (navigator.share) {
-        try { await navigator.share({ text, url }); }
-        catch(e){} // user cancelled
-      } else {
-        try {
-          await navigator.clipboard.writeText(`${text}\n${url}`);
-          el.share.textContent = "✅ Link copied";
-          setTimeout(()=> el.share.textContent = "📤 Share", 1400);
-        } catch(e) {
-          alert("Link copied:\n" + url);
-        }
-      }
-    });
-
-    /* -------- Auto-refresh at midnight (UTC) -------- */
-    (function scheduleMidnightRefresh(){
-      const now = new Date();
-      const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1, 0,0,2)); // +2s buffer
-      const ms = next - now;
-      setTimeout(() => { render("daily"); scheduleMidnightRefresh(); }, ms);
-    })();
-  </script>
+    // Auto-refresh at midnight (UTC) so daily rotates
+    const now = new Date();
+    const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1, 0,0,2));
+    setTimeout(() => { render(); }, next - now);
+  })();
+</script>
 </body>
 </html>
