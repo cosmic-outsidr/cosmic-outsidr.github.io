@@ -6,10 +6,13 @@
   <title>Cosmic Outsidr • Messages</title>
   <meta name="description" content="A single, rotating or daily message of encouragement for wanderers and wonderers." />
   <meta name="theme-color" content="#0e1530" />
-  <!-- Google font for a cosmic vibe -->
+  <!-- Google font -->
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
+    /* =============================
+       Cosmic Outsidr — Clean Styles
+       ============================= */
     :root{
       --bg:#0e1530;
       --text:#f7f7f7;
@@ -17,72 +20,76 @@
       --panelBorder:rgba(255,255,255,.08);
       --accent:#7de1ff;
       --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
-      --glow: 0 0 22px rgba(125,225,255,.35);
+      --glow:0 0 22px rgba(125,225,255,.35);
+      --star:#ffe58a;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
+
+    *{ box-sizing:border-box }
+    html, body { min-height:100svh; margin:0 }
+
     body{
       font-family:"Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans";
       color:var(--text);
       display:grid; place-items:center;
-      background: var(--bg);
+      background:var(--bg);
       overflow-x:hidden;
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* Background image layer */
+    /* Background image layer (uses your repo image) */
     .bg{
       position:fixed; inset:0; z-index:-2;
       background:
         linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.68)),
-        url("IMG_1173.jpeg") center/cover no-repeat;
+        url("yellowflowerfield.jpeg") center / cover no-repeat;
+      will-change:transform; transform:translateZ(0);
     }
-    /* If your file isn't .webp, JS below will swap to .jpg/.jpeg/.png automatically */
 
-    /* Star sprinkles (subtle) */
+    /* Subtle star sprinkles */
     .stars{
       position:fixed; inset:0; z-index:-1; pointer-events:none;
       background:
-        radial-gradient(2px 2px at 20% 30%, #ffe58a, transparent 55%),
-        radial-gradient(2px 2px at 70% 50%, #ffe58a, transparent 55%),
-        radial-gradient(2px 2px at 40% 80%, #ffe58a, transparent 55%),
-        radial-gradient(1px 1px at 55% 15%, #ffe58a, transparent 55%),
-        radial-gradient(1px 1px at 85% 70%, #ffe58a, transparent 55%);
+        radial-gradient(2px 2px at 20% 30%, var(--star), transparent 55%),
+        radial-gradient(2px 2px at 70% 50%, var(--star), transparent 55%),
+        radial-gradient(2px 2px at 40% 80%, var(--star), transparent 55%),
+        radial-gradient(1px 1px at 55% 15%, var(--star), transparent 55%),
+        radial-gradient(1px 1px at 85% 70%, var(--star), transparent 55%);
       filter: drop-shadow(0 0 6px rgba(255,229,138,.4));
     }
 
     main.card{
       text-align:center;
-      padding:28px 22px; width:min(92vw, 780px);
+      padding:28px 22px;
+      width:min(92vw, 780px);
       background:var(--panel);
       border:1px solid var(--panelBorder);
       border-radius:20px;
       backdrop-filter: blur(4px);
       box-shadow: var(--shadow);
-      margin: 0 16px;
+      margin:0 16px;
     }
+
     h1{
       margin:0 0 12px;
       font-size:clamp(26px, 7vw, 54px);
       line-height:1.1;
-      text-shadow: var(--glow);
-      transition: opacity .35s ease;
-      opacity:1;
+      text-shadow:var(--glow);
+      transition:opacity .35s ease;
     }
-    .fading{ opacity:0; } /* used for fade animation */
+    .fading{ opacity:0 } /* fade hook */
 
-    p.sub{margin:.35rem 0 0; font-size:clamp(14px, 3.5vw, 18px); opacity:.9}
+    p.sub{ margin:.35rem 0 0; font-size:clamp(14px, 3.5vw, 18px); opacity:.9 }
 
     footer{
       position:fixed; inset:auto 0 10px;
       text-align:center; font-size:12px; opacity:.78; padding:0 10px;
     }
 
-    /* Controls (mobile-first sizing) */
+    /* Controls */
     .controls{
       position:fixed; top:12px; right:12px; left:12px;
       display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;
-      font-size:12px; opacity:.95
+      font-size:12px; opacity:.95;
     }
     .btn{
       border:1px solid var(--panelBorder); border-radius:999px;
@@ -90,51 +97,22 @@
       cursor:pointer; backdrop-filter: blur(2px); box-shadow: var(--shadow);
       display:inline-flex; align-items:center; gap:8px;
     }
-    .btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-    .btn[disabled]{opacity:.6; cursor:not-allowed}
+    .btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed }
 
     /* Mobile tweaks */
-    @media (max-width:480px){
+    @media (max-width:768px){
+      .bg{ background-position:center center } /* iOS fixed-bg behavior */
       .btn{ padding:7px 10px }
       main.card{ padding:22px 18px }
+      h1{ font-size:clamp(26px, 7vw, 54px); line-height:1.12 }
+      p.sub{ font-size:clamp(14px, 3.5vw, 18px) }
     }
-    /* --- Responsive background: keep your existing font stack unchanged --- */
-html, body { min-height: 100svh; } /* better mobile viewport handling */
 
-/* Background layer (Option B) — uses your existing .bg element */
-.bg{
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  /* Keep/adjust your overlay darkness as you like */
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.68)),
-    url("yellowflowerfield.jpeg") center / cover no-repeat;
-  /* Help prevent jank on mobile */
-  will-change: transform;
-  transform: translateZ(0);
-}
-
-/* Readability on all sizes (keeps your card styling, just a tad more opacity) */
-main.card{
-  background: rgba(0,0,0,.35);
-  border: 1px solid rgba(255,255,255,.08);
-  backdrop-filter: blur(4px);
-}
-
-/* Mobile tweaks */
-@media (max-width: 768px){
-  /* iOS Safari hates fixed backgrounds; since .bg is fixed, keep it simple */
-  .bg{ background-position: center center; }
-  main.card{ padding: 22px 18px; width: min(92vw, 780px); }
-  h1{ font-size: clamp(26px, 7vw, 54px); line-height: 1.12; }
-  p.sub{ font-size: clamp(14px, 3.5vw, 18px); }
-}
-
-/* Desktop tweaks */
-@media (min-width: 769px){
-  h1{ font-size: clamp(32px, 5.5vw, 54px); line-height: 1.1; }
-}
+    /* Motion accessibility */
+    @media (prefers-reduced-motion:reduce){
+      *{ animation:none !important; transition:none !important; }
+    }
   </style>
 </head>
 <body>
@@ -155,79 +133,113 @@ main.card{
 
   <footer>Cosmic Outsidr • Everyone belongs among the stars</footer>
 
- <script>
-  // Fallback (used if JSON fetch fails)
-  const FALLBACK = {
-    mode: "daily",
-    messages: [
-      "You belong outside — and out there.",
-      "Find your people. Or be your people.",
-      "Take up space. Share the trail.",
-      "You are the wonder you’re chasing.",
-      "Dusty, loved, and perfectly enough.",
-      "Joy is a direction, not a place.",
-      "Breathe. Look up. Keep wandering.",
-      "Everyone belongs among the stars.",
-      "Your voice, your pace, your path."
-    ]
-  };
+  <script>
+    /* ========= Message Engine (JSON-capable with fallback) ========= */
+    const FALLBACK = {
+      mode: "daily",
+      messages: [
+        "You belong outside — and out there.",
+        "Find your people. Or be your people.",
+        "Take up space. Share the trail.",
+        "You are the wonder you’re chasing.",
+        "Dusty, loved, and perfectly enough.",
+        "Joy is a direction, not a place.",
+        "Breathe. Look up. Keep wandering.",
+        "Everyone belongs among the stars.",
+        "Your voice, your pace, your path."
+      ]
+    };
 
-  const el = {
-    msg: document.getElementById("msg"),
-    modeLabel: document.getElementById("modeLabel"),
-    newBtn: document.getElementById("newMsg"),
-    toggleBtn: document.getElementById("toggleMode"),
-  };
+    const el = {
+      msg: document.getElementById("msg"),
+      modeLabel: document.getElementById("modeLabel"),
+      newBtn: document.getElementById("newMsg"),
+      toggleBtn: document.getElementById("toggleMode"),
+      copyBtn: document.getElementById("copyBtn"),
+      shareBtn: document.getElementById("shareBtn"),
+    };
 
-  const pickDaily = (list) => {
-    const d = new Date();
-    const seed = d.getUTCFullYear()*372 + (d.getUTCMonth()+1)*31 + d.getUTCDate();
-    return seed % list.length;
-  };
-  const pickRandom = (list) => Math.floor(Math.random() * list.length);
+    const pickDaily = (list) => {
+      const d = new Date();
+      const seed = d.getUTCFullYear()*372 + (d.getUTCMonth()+1)*31 + d.getUTCDate();
+      return seed % list.length;
+    };
+    const pickRandom = (list) => Math.floor(Math.random() * list.length);
 
-  const fadeSetText = (node, text) => {
-    node.classList.add('fading');
-    setTimeout(() => { node.textContent = text; node.classList.remove('fading'); }, 180);
-  };
+    const fadeSetText = (node, text) => {
+      node.classList.add('fading');
+      setTimeout(() => { node.textContent = text; node.classList.remove('fading'); }, 180);
+    };
 
-  let DATA = FALLBACK;
-  let mode = FALLBACK.mode;
+    let DATA = FALLBACK;
+    let mode = FALLBACK.mode;
 
-  async function loadMessages() {
-    try {
-      // prevent heavy caching while you iterate
-      const res = await fetch("./messages.json", { cache: "no-store" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      DATA = await res.json();
-      mode = (DATA.mode === "random" ? "random" : "daily");
-    } catch (e) {
-      console.warn("Using fallback messages:", e);
+    async function loadMessages() {
+      try {
+        const res = await fetch("./messages.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        DATA = await res.json();
+        mode = (DATA.mode === "random" ? "random" : "daily");
+      } catch (e) {
+        console.warn("Using fallback messages:", e);
+      }
     }
-  }
 
-  function render() {
-    const list = DATA.messages || FALLBACK.messages;
-    const idx = (mode === "daily") ? pickDaily(list) : pickRandom(list);
-    fadeSetText(el.msg, list[idx]);
-    el.modeLabel.textContent = mode;
-  }
+    function render() {
+      const list = DATA.messages || FALLBACK.messages;
+      const idx = (mode === "daily") ? pickDaily(list) : pickRandom(list);
+      fadeSetText(el.msg, list[idx]);
+      el.modeLabel.textContent = mode;
+    }
 
-  (async function init() {
-    await loadMessages();
-    // allow ?mode=random override for quick testing
-    const params = new URLSearchParams(location.search);
-    if (params.get("mode")) mode = (params.get("mode")==="random") ? "random":"daily";
-    render();
+    (async function init() {
+      await loadMessages();
 
-    el.newBtn?.addEventListener("click", render);
-    el.toggleBtn?.addEventListener("click", () => { mode = (mode==="daily")?"random":"daily"; render(); });
+      // Allow quick test override via ?mode=random
+      const params = new URLSearchParams(location.search);
+      if (params.get("mode")) mode = (params.get("mode")==="random") ? "random" : "daily";
 
-    // Auto-refresh at midnight (UTC) so daily rotates
-    const now = new Date();
-    const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1, 0,0,2));
-    setTimeout(() => { render(); }, next - now);
-  })();
-</script>
+      render();
+
+      // Controls
+      el.newBtn?.addEventListener("click", render);
+      el.toggleBtn?.addEventListener("click", () => { mode = (mode==="daily") ? "random" : "daily"; render(); });
+
+      // Copy to clipboard
+      el.copyBtn?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(el.msg.textContent);
+          el.copyBtn.textContent = "✅ Copied";
+          setTimeout(()=> el.copyBtn.textContent = "📋 Copy", 1400);
+        } catch { /* ignore */ }
+      });
+
+      // Share (Web Share API + fallback)
+      el.shareBtn?.addEventListener("click", async () => {
+        const text = el.msg.textContent + " — Cosmic Outsidr";
+        const url  = location.href;
+        if (navigator.share) {
+          try { await navigator.share({ text, url }); } catch {}
+        } else {
+          try {
+            await navigator.clipboard.writeText(`${text}\n${url}`);
+            el.shareBtn.textContent = "✅ Link copied";
+            setTimeout(()=> el.shareBtn.textContent = "📤 Share", 1400);
+          } catch {
+            alert("Link copied:\n" + url);
+          }
+        }
+      });
+
+      // Auto-refresh at midnight (UTC) so daily rotates
+      const now = new Date();
+      const next = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate()+1, 0, 0, 2
+      ));
+      setTimeout(render, next - now);
+    })();
+  </script>
 </body>
 </html>
